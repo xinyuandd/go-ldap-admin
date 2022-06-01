@@ -34,6 +34,25 @@ func (s GroupService) List(req *request.GroupListReq) ([]*model.Group, error) {
 	return list, err
 }
 
+// List 获取数据列表
+func (s GroupService) ListTree(req *request.GroupListReq) ([]*model.Group, error) {
+	var list []*model.Group
+	db := common.DB.Model(&model.Group{}).Order("created_at DESC")
+
+	groupName := strings.TrimSpace(req.GroupName)
+	if groupName != "" {
+		db = db.Where("group_name LIKE ?", fmt.Sprintf("%%%s%%", groupName))
+	}
+	groupRemark := strings.TrimSpace(req.Remark)
+	if groupRemark != "" {
+		db = db.Where("remark LIKE ?", fmt.Sprintf("%%%s%%", groupRemark))
+	}
+
+	pageReq := tools.NewPageOption(req.PageNum, req.PageSize)
+	err := db.Offset(pageReq.PageNum).Limit(pageReq.PageSize).Find(&list).Error
+	return list, err
+}
+
 // 拼装dn信息
 func (s GroupService) GetGroupDn(groupId uint, oldDn string) (dn string, e error) {
 	depart := new(model.Group)

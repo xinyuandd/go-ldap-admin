@@ -114,7 +114,7 @@ func (l GroupLogic) GetTree(c *gin.Context, req interface{}) (data interface{}, 
 	_ = c
 
 	var groups []*model.Group
-	groups, err := isql.Group.List(r)
+	groups, err := isql.Group.ListTree(r)
 	if err != nil {
 		return nil, tools.NewMySqlError(fmt.Errorf("获取资源列表失败: " + err.Error()))
 	}
